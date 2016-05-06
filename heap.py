@@ -6,6 +6,7 @@ class Heap(object):
     def __init__(self, beforesort):
         self.myheap = beforesort
         self.sorted = []
+        self.issorted = False
 
     def adjheap(self, heap, i, end):
         if heap is None:
@@ -24,6 +25,7 @@ class Heap(object):
                 heap[i_max], heap[i] = heap[i], heap[i_max]
                 self.adjheap(None, i_max, end)
 
+
     def bulidheap(self, heap):
         if heap is None:
             heap = self.myheap
@@ -41,6 +43,7 @@ class Heap(object):
             heap[i], heap[0] = heap[0], heap[i]
             self.adjheap(None, 0, i)
         self.sorted = self.myheap[:]
+        self.issorted = True
         return self.sorted
 
     def top(self, k, heap=None):
@@ -52,6 +55,7 @@ class Heap(object):
             heap = self.myheap
         else:
             self.myheap = heap
+            self.issorted = False
         if k < 0:
             k = -k
             aim = -k
@@ -60,13 +64,49 @@ class Heap(object):
             aim = len(heap) - 1
         self.bulidheap(heap)
 
-        for i in range(len(heap) - 1, len(heap) - aim - 2, -1):
-            heap[0], heap[i] = heap[i], heap[0]
-            self.adjheap(None, 0, i)
+        if not self.issorted:
+            for i in range(len(heap) - 1, len(heap) - aim - 2, -1):
+                heap[0], heap[i] = heap[i], heap[0]
+                self.adjheap(None, 0, i)
         self.sorted = self.myheap[-k:]
         if not re_sign:
             self.sorted.reverse()
         return self.sorted
+
+    def insert(self, n):
+        if self.issorted:
+            for i in range(len(self.myheap)):
+                if self.myheap[i] >= n:
+                    self.myheap.insert(i, n)
+                    break
+            self.myheap.append(n)
+        else:
+            if not isinstance(self.myheap, list):
+                raise TypeError
+            else:
+                self.myheap.append(n)
+                return self.heapsort()
+        self.issorted = True
+        self.sorted = self.myheap[:]
+        return self.sorted
+
+    def pop(self):
+        if isinstance(self.myheap, list):
+            return self.myheap.pop(0)
+        else:
+            raise TypeError
+
+    def lastresult(self):
+        if self.issorted:
+            return self.sorted
+        else:
+            return []
+
+    def result(self):
+        if self.issorted:
+            return self.myheap
+        else:
+            return []
 
 
 def main():
@@ -74,7 +114,9 @@ def main():
     heapsort = Heap(mylist)
     print heapsort.heapsort()
     print heapsort.sorted
-    print heapsort.top(-8)
+    print heapsort.pop()
+    print heapsort.result()
+    print heapsort.insert(10)
 
 if __name__ == '__main__':
     main()
